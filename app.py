@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request
 import numpy as np
 import tensorflow as tf
@@ -197,3 +196,12 @@ def predict():
 
 
         return render_template('result.html', di=di_percent)
+
+
+
+@app.route('/result')
+def result():
+    return render_template('result.html')
+
+if __name__ == '__main__':
+    app.run()
