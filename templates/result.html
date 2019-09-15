@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="author" content="Hasan OnM">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--===============================================================================================-->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icons/favicon_main.png') }}"/>
+  <title>Anazlyed Result</title>
+
+  <!-- Meta and Opengraph tags -->
+  <meta name="description" content="Pure CSS Progress Bars">
+  <meta name="keywords" content="css, html, progress bar">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cssprogress.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/circle.css') }}">
+
+  <style type="text/css">
+
+
+      .dark-area {
+          background-color: #666;
+          padding: 40px;
+          margin: 0 -40px 20px -40px;
+          clear: both;
+      }
+
+      .clearfix:before,.clearfix:after {content: " "; display: table;}
+      .clearfix:after {clear: both;}
+      .clearfix {*zoom: 1;}
+
+  </style>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/circle.css') }}">
+
+
+
+  <style>
+  div#load_screen{
+  	background: #000;
+  	opacity: 1;
+  	position: fixed;
+      z-index:10;
+  	top: 0px;
+  	width: 100%;
+  	height: 1600px;
+  }
+  div#load_screen > div#loading{
+  	color:#FFF;
+  	width:120px;
+  	height:24px;
+  	margin: 300px auto;
+  }
+  </style>
+  <script>
+  window.addEventListener("load", function(){
+  	var load_screen = document.getElementById("load_screen");
+  	document.body.removeChild(load_screen);
+  });
+  </script>
+
+</head>
+<body style="background: linear-gradient(#141E30, #9198e5);">
+
+
+  	<div id="load_screen"><div id="loading">loading document</div></div>
+  <!-- header -->
+
+
+  <!-- main -->
+  <main>
+    <div class="main-content">
+      <div id="example-1" class="examples">
+
+
+      <div id="example-5" class="examples">
+        <center><h1 style="color:#EE7600;letter-spacing:4px">Analyzed Mental Health Stats:</h1></center>
+
+        Depression
+        <div class="cssProgress">
+          <div class="progress2">
+            <div class="cssProgress-bar cssProgress-success cssProgress-active" data-percent="{{di}}" style="width:{{di}}%;">
+              <span class="cssProgress-label">{{di}}%</span>
+            </div>
+          </div>
+        </div>
+        PSS
+        <div class="cssProgress">
+          <div class="progress2">
+            <div class="cssProgress-bar cssProgress-warning  cssProgress-active" data-percent="{{pss}}" style="width: {{pss}}%;">
+              <span class="cssProgress-label">{{pss}}%</span>
+            </div>
+          </div>
+        </div>
+        GSE
+        <div class="cssProgress">
+          <div class="progress2">
+            <div class="cssProgress-bar cssProgress-danger cssProgress-active" data-percent="{{gse}}" style="width: {{gse}}%;">
+              <span class="cssProgress-label">{{gse}}%</span>
+            </div>
+          </div>
+        </div>
+        Ex
+        <div class="cssProgress">
+          <div class="progress2">
+            <div class="cssProgress-bar cssProgress-info cssProgress-active" data-percent="{{ex}}" style="width: {{ex}}%;">
+              <span class="cssProgress-label">{{ex}}%</span>
+
+            </div>
+          </div>
+        </div>
+        A
+        <div class="cssProgress">
+          <div class="progress2">
+            <div class="cssProgress-bar cssProgress-ext1 cssProgress-active" data-percent="{{a}}" style="width: {{a}}%;">
+              <span class="cssProgress-label">{{a}}%</span>
+
+            </div>
+          </div>
+        </div>
+        C
+        <div class="cssProgress">
+          <div class="progress2">
+            <div class="cssProgress-bar cssProgress-ext2 cssProgress-active" data-percent="{{c}}" style="width: {{c}}%;">
+              <span class="cssProgress-label">{{c}}%</span>
+
+            </div>
+          </div>
+        </div>
+        E
+        <div class="cssProgress">
+          <div class="progress2">
+            <div class="cssProgress-bar cssProgress-ext3 cssProgress-active" data-percent="{{ex}}" style="width: {{ex}}%;">
+              <span class="cssProgress-label">{{ex}}%</span>
+
+            </div>
+          </div>
+        </div>
+        O
+        <div class="cssProgress">
+          <div class="progress2">
+            <div class="cssProgress-bar cssProgress-ext4 cssProgress-active" data-percent="{{o}}" style="width: {{o}}%;">
+              <span class="cssProgress-label">{{o}}%</span>
+
+            </div>
+          </div>
+        </div>
+
+
+      </div><!-- @end #example-5 -->
+</div>
+</div>
+<!-- @end main -->
+
+  <!-- Footer -->
+  <footer style="justify-content: space-between;">
+
+    <figure class="swing">
+      <img src="https://i.ibb.co/QQr5qnr/Happy-Emoji-Icon-5c9b7b25-b215-4457-922d-fef519a08b06-large.png" width="320" >
+    </figure>
+    <h2 style="color:#EE7600;letter-spacing:2px">::Analyzed CGPA::<h2>
+    <div class="c100 {{cgpa_percent}} big" style="margin-right:200px";>
+
+        <span>{{cgpa}}</span>
+
+        <div class="slice">
+            <div class="bar"></div>
+            <div class="fill"></div>
+
+        </div>
+
+    </div>
+
+
+
+
+  </footer>
+
+  <!-- Include scripts -->
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery/jquery-2.1.4.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js') }}"></script>
+</body>
+
+</html>

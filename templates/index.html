@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Mental Health Modeling With Machine Learning</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icons/favicon_main.png') }}" />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/animate/animate.css') }}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/css-hamburgers/hamburgers.min.css') }}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/select2/select2.min.css') }}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/util.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+    <!--===============================================================================================-->
+
+    <style>
+        div#loading {
+            display: none;
+            cursor: wait;
+            margin: 0 auto;
+            position: relative;
+            top: 33%;
+        }
+
+        .loading_img {
+            display: flex;
+            margin: 0 auto;
+        }
+    </style>
+    <script type="text/javascript">
+		// <![CDATA[
+        function loading() {
+            $("#loading").show();
+            $("#content").hide();
+        }
+        // ]]>
+    </script>
+
+</head>
+
+<body>
+    <div id="loading">
+        <img class="loading_img" src="{{ url_for('static', filename='images/cube.gif') }} ">
+        <p style="text-align:center;letter-spacing: 2px;">Please wait.It can take 1 to 2 minute</p>
+        <p style="text-align:center;letter-spacing: 2px;"> <b>UIU TEAM RUSH®</b> </p>
+    </div>
+
+    <div id="content">
+        <div class="contact1 container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="header_main_page">
+                        <img class="img-fluid" src="{{ url_for('static', filename='images/header-logo.png') }}" alt="IMG">
+                        <span class="headtext"> MENTAL HEALTH MODELING USING MACHINE LEARNING </span>
+                    </div>
+                </div>
+                <div class="col-12 container-contact1">
+                    <div class="col-md-4 ">
+                        <div class="contact1-pic js-tilt" data-tilt>
+                            <img src="{{ url_for('static', filename='images/img-01.png') }}" alt="IMG">
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-sm-100">
+
+                        <form class="contact1-form validate-form" action="{{ url_for('predict')}}" method="post">
+                            <div class="contact1-form-title">
+                                <b>	Please fill up the form</b>
+                            </div>
+
+                            <div class="wrap-input1 validate-input" data-validate="Name is required">
+                                <input class="input1" type="text" name="name" placeholder="Name">
+                                <span class="shadow-input1"></span>
+                            </div>
+
+                            <div class="wrap-input1 validate-input" data-validate="Valid email is required: ex@abc.com">
+                                <input class="input1" type="text" name="email" placeholder="Email">
+                                <span class="shadow-input1"></span>
+                            </div>
+
+                            <div class="wrap-input1 validate-input" data-validate="Text is required">
+                                <textarea class="input1" name="message" placeholder="Text/Essay/Story/How you feeling?" rows="10"></textarea>
+                                <span class="shadow-input1"></span>
+                            </div>
+
+                            <div class="container-contact1-form-btn">
+                                <button class="contact1-form-btn" type="submit">
+                                    <span>
+								Generate Mental Health
+								<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+							</span>
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+            <footer>
+                <p> <b>UIU TEAM RUSH®</b></p>
+            </footer>
+        </div>
+
+        <!--===============================================================================================-->
+        <script src="{{ url_for('static', filename='vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+        <!--===============================================================================================-->
+        <script src="{{ url_for('static', filename='vendor/bootstrap/js/popper.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+        <!--===============================================================================================-->
+        <script src="{{ url_for('static', filename='vendor/select2/select2.min.js') }}"></script>
+        <!--===============================================================================================-->
+        <script src="{{ url_for('static', filename='vendor/tilt/tilt.jquery.min.js') }}"></script>
+        <script>
+            $('.js-tilt').tilt({
+                scale: 1.1
+            })
+        </script>
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+
+            gtag('config', 'UA-23581568-13');
+        </script>
+
+        <!--===============================================================================================-->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+	</div>
+
+</body>
+
+</html>
