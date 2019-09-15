@@ -5,6 +5,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import pandas as pd
 import spacy
+import pickle
 from tensorflow.python.keras.models import load_model
 from tensorflow.python.keras.backend import set_session
 import re
@@ -41,7 +42,7 @@ def detect_language(text):
         language = "error"
     return language
 
-def clean(textData):
+def cleanFbData(textData):
     msg_dlt = '\"message\"'
     pattern = re.compile(r"(.)\1{2,}", re.DOTALL)  # if more then 2 time an alphabet repeat then reduce them. for example heeeeee will be hee
     fbData = []
@@ -112,10 +113,77 @@ def clean(textData):
     print(otherLangData)
     return allPost
 
+
+def cleanNormalText(textData):
+    pattern = re.compile(r"(.)\1{2,}", re.DOTALL)  # if more then 2 time an alphabet repeat then reduce them. for example heeeeee will be hee
+    fbData = []
+    otherLangData = []
+    flag =0
+    allPost=''
+    all_str = ''
+    for line in textData.splitlines():
+        all_str = line
+        all_str = all_str.lower()  # convert text to lower-case
+        all_str = re.sub(' [ ]+', ' ', all_str)  # remove unnecessary space
+        all_str = all_str.replace('\\n', ' ')  # remove all \n
+        all_str = re.sub('\?', ' ', all_str)  # remove all ? without last position of a line
+        all_str = re.sub('\" *\",', '', all_str)  # remove all empty string " "
+        all_str = re.sub(r'http\S+', '', all_str)  # remove all Url" "
+        all_str = re.sub(r'#[ ]*([^\s]+)', r'\1', all_str)  # remove the # in #hashtag
+        all_str = all_str.replace('\"', ' ')  # remove all "
+        all_str = all_str.replace(',', ' ')  # remove all ,
+        all_str = re.sub('\.[\.]+', ' ', all_str)  # remove ...
+        all_str = re.sub('\\\\', '', all_str)  # remove backslash
+        all_str = re.sub('�', '\'', all_str)
+        all_str = re.sub(' i ', ' I ', all_str)
+
+        # replace short word into full word E.g.. i m shazzad will be i am shazzad
+        all_str = re.sub(r' r ', ' are ', all_str)
+        all_str = re.sub(r' m ', ' am ', all_str)
+        all_str = re.sub(r' u ', ' you ', all_str)
+        all_str = re.sub(r' b ', ' be ', all_str)
+        all_str = re.sub(r' n8 ', ' night ', all_str)
+        all_str = re.sub(r' gn8 ', ' good night ', all_str)
+        all_str = re.sub(r' r8 ', ' right ', all_str)
+        all_str = re.sub(r' hv ', ' have ', all_str)
+        all_str = re.sub(r' bt ', ' but ', all_str)
+        all_str = re.sub(r' ur ', ' your ', all_str)
+        all_str = re.sub(r' n ', ' and ', all_str)
+        all_str = re.sub(r' bro ', ' brother ', all_str)
+        all_str = re.sub(r' tha ', ' the ', all_str)
+        all_str = re.sub(r' it(z)+ ', ' it\'s ', all_str)
+        all_str = re.sub(r' ai ', ' artificial intelligent ', all_str)
+        all_str = re.sub(r' uni ', ' university ', all_str)
+        all_str = pattern.sub(r"\1\1", all_str)  # remove more then 2 characters in a row.. like amiiii will be amii
+        fbData.append(all_str)
+    for j in range(0, len(fbData)):
+        fbData[j] = fbData[j].strip()  # remove all extra spaces
+        for word in fbData[j].split():  # convert i'm = i am
+            if word.lower() in contractions:
+                fbData[j] = fbData[j].replace(word, contractions[word.lower()])
+        if len(fbData[j]) > 2:
+            language = detect_language(fbData[j])
+        else:
+            language = "error"
+        if language == "en" or language == "error":
+            if flag ==0:
+                allPost = fbData[j]
+                flag =1
+            else:
+                allPost = allPost + '\n' + fbData[j]
+        else:
+            fbData[j] = fbData[j] + "---->" + language
+            otherLangData.append(fbData[j])
+    allPost = list(filter(None, allPost))  # remove empty string
+    otherLangData = list(filter(None, otherLangData))  # remove empty string
+
+    print("other language Data: ")
+    print(otherLangData)
+    return allPost
+
+
 app = Flask(__name__)
-
-global nlp,graph,di_model,pss_model,sess,elmo
-
+global nlp,graph,di_model,pss_model,gse_model,ex_model,a_model,c_model,e_model,o_model,loaded_model,loaded_model2,sess,elmo
 tf_config = os.environ.get('TF_CONFIG')
 sess = tf.Session(config=tf_config)
 graph = tf.get_default_graph()
@@ -126,6 +194,20 @@ di_model = load_model('di.h5')
 print("di model load complete")
 pss_model = load_model('pss.h5')
 print("pss model load complete")
+gse_model = load_model('gse.h5')
+print("gse model load complete")
+ex_model = load_model('ex.h5')
+print("ex model load complete")
+a_model = load_model('a.h5')
+print("a model load complete")
+c_model = load_model('c.h5')
+print("c model load complete")
+e_model = load_model('e.h5')
+print("e model load complete")
+o_model = load_model('o.h5')
+print("o model load complete")
+loaded_model = pickle.load(open('M.sav', 'rb'))
+loaded_model2 = pickle.load(open('P.sav', 'rb'))
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
 graph = tf.get_default_graph()
 
@@ -138,65 +220,231 @@ def home():
 @app.route('/predict',methods=['POST'])
 def predict():
     if request.method == 'POST':
+        s = time.time() # checking how much time the program take to execute
+        start = time.time()
         _name = request.form['name']
         _email = request.form['email']
-        _data = request.form['data']
+        _data = request.form['message']
 
-        cleanData = clean(_data)
-        print("first part of clean complete")
-        df = pd.DataFrame(columns=['Facebook_Data'])
-        df = df.append({'Facebook_Data': cleanData}, ignore_index=True)
+        #checking is data comes from facebook or normal paragraph
+        count_Word_message= _data.count("\"message\":")*.1
+        count_Word_id= _data.count("\"id\":")
+        count_Word_posts= _data.count("\"posts\":")
+        count_Word_name= _data.count("\"name\":")
+        count_Word_data= _data.count("\"data\":")
 
-    #pre-processing
-
-        # remove punctuation marks
-        punctuation = '!"#$%&*/;=?@[\\]`{|}~'
-        df['clean_fb_data'] = df['Facebook_Data'].apply(lambda x: ''.join(ch for ch in x if ch not in set(punctuation)))
-        # remove whitespaces
-        df['clean_fb_data'] = df['clean_fb_data'].apply(lambda x: ' '.join(x.split()))
-
-        # function to lemmatize text
-        def lemmatization(texts):
-            output = []
-            for i in texts:
-                s = [token.lemma_ for token in nlp(i)]
-                output.append(' '.join(s))
-            return output
-
-        df['clean_fb_data'] = lemmatization(df['clean_fb_data'])
-
-    #elmo word embedding
-        X = df["clean_fb_data"]
-
-        def elmo_vectors2(x):
-            embeddings = elmo(x.tolist(), signature="default", as_dict=True)["elmo"]
-            with tf.Session() as sess:
-                sess.run([tf.global_variables_initializer(), tf.tables_initializer()])
-                return sess.run(embeddings)
-
-
-        # Extract ELMo embeddings
-        with graph.as_default():
-            set_session(sess)
-            elmo_train_X = elmo_vectors2(X)
-        print("train shape: ",elmo_train_X.shape)
-    #load di.h5
-        with graph.as_default():
-            set_session(sess)
-            prediction_di = di_model.predict(x=elmo_train_X)
-        prediction_probability_di = np.amax(prediction_di[0])
-        prediction_index_di = (np.where(prediction_di[0] == np.amax(prediction_di[0])))[0][0]
-        if prediction_index_di == 0:
-            predicted_di = 0 + (prediction_probability_di * 0.25)
-        elif prediction_index_di == 1:
-            predicted_di = 0.251 + (prediction_probability_di * 0.498)
+        prob_facebook_msg = (count_Word_id*count_Word_posts*count_Word_name*count_Word_data )+ count_Word_message
+        if prob_facebook_msg>=1:
+            cleanData = cleanFbData(_data)
         else:
-            predicted_di = 0.75 + (prediction_probability_di * 0.25)
-        di_percent = np.round(predicted_di*100)
-        print("dipression percent:",di_percent)
+            cleanData = cleanNormalText(_data)
+
+        if (len(cleanData) == 0):
+            print("basic clean")
+            return render_template('Error.html')
+        else:
+            print("first part of clean complete")
+            df = pd.DataFrame(columns=['Facebook_Data'])
+            df = df.append({'Facebook_Data': cleanData}, ignore_index=True)
+
+        #pre-processing
+
+            # remove punctuation marks
+            punctuation = '!"#$%&*/;=?@[\\]`{|}~'
+            df['clean_fb_data'] = df['Facebook_Data'].apply(lambda x: ''.join(ch for ch in x if ch not in set(punctuation)))
+            # remove whitespaces
+            df['clean_fb_data'] = df['clean_fb_data'].apply(lambda x: ' '.join(x.split()))
+
+            # We will lemmatize (normalize) the text by leveraging the popular spaCy library.
+            # import spaCy's language model
+            nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+            print("spacy load completed")
+            # function to lemmatize text
+            def lemmatization(texts):
+                output = []
+                for i in texts:
+                    s = [token.lemma_ for token in nlp(i)]
+                    output.append(' '.join(s))
+                return output
+
+            df['clean_fb_data'] = lemmatization(df['clean_fb_data'])
+
+        #elmo word embedding
+            X = df["clean_fb_data"]
+
+            if(len(X)==0):
+                print("err lemmatization")
+                return render_template('Error.html')
+            else:
+                def elmo_vectors2(x):
+                    embeddings = elmo(x.tolist(), signature="default", as_dict=True)["elmo"]
+                    with tf.Session() as sess:
+                        sess.run([tf.global_variables_initializer(), tf.tables_initializer()])
+                        return sess.run(embeddings)
 
 
-        return render_template('result.html', di=di_percent)
+                # Extract ELMo embeddings
+                with graph.as_default():
+                    set_session(sess)
+                    elmo_train_X = elmo_vectors2(X)
+                print("train shape: ",elmo_train_X.shape)
+                end = time.time()
+                preprocessing_time = end - start
+
+                start = time.time()
+            #load di.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_di = di_model.predict(x=elmo_train_X)
+                prediction_probability_di = np.amax(prediction_di[0])
+                prediction_index_di = (np.where(prediction_di[0] == np.amax(prediction_di[0])))[0][0]
+                if prediction_index_di == 0:
+                    predicted_di = 0 + (prediction_probability_di * 0.25)
+                elif prediction_index_di == 1:
+                    predicted_di = 0.251 + (prediction_probability_di * 0.498)
+                else:
+                    predicted_di = 0.75 + (prediction_probability_di * 0.25)
+                di_percent = np.round(predicted_di*100)
+                print("dipression percent:",di_percent)
+
+            # load pss.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_pss = pss_model.predict(x=elmo_train_X)
+                prediction_probability_pss = np.amax(prediction_pss[0])
+                prediction_index_pss = (np.where(prediction_pss[0] == np.amax(prediction_pss[0])))[0][0]
+                if prediction_index_pss == 0:
+                    predicted_pss = 0 + (prediction_probability_pss * 0.25)
+                elif prediction_index_pss == 1:
+                    predicted_pss = 0.251 + (prediction_probability_pss * 0.498)
+                else:
+                    predicted_pss = 0.75 + (prediction_probability_pss * 0.25)
+                pss_percent = np.round(predicted_pss * 100)
+                print("pss percent:",pss_percent)
+
+            # load gse.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_gse = gse_model.predict(x=elmo_train_X)
+                prediction_probability_gse = np.amax(prediction_gse[0])
+                prediction_index_gse = (np.where(prediction_gse[0] == np.amax(prediction_gse[0])))[0][0]
+                if prediction_index_gse == 0:
+                    predicted_gse = 0 + (prediction_probability_gse * 0.25)
+                elif prediction_index_gse == 1:
+                    predicted_gse = 0.251 + (prediction_probability_gse * 0.498)
+                else:
+                    predicted_gse = 0.75 + (prediction_probability_gse * 0.25)
+                gse_percent = np.round(predicted_gse * 100)
+                print("gse percent:",gse_percent)
+
+            # load ex.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_ex = ex_model.predict(x=elmo_train_X)
+                prediction_probability_ex = np.amax(prediction_ex[0])
+                prediction_index_ex = (np.where(prediction_ex[0] == np.amax(prediction_ex[0])))[0][0]
+                if prediction_index_ex == 0:
+                    predicted_ex = 0 + (prediction_probability_ex * 0.25)
+                elif prediction_index_ex == 1:
+                    predicted_ex = 0.251 + (prediction_probability_ex * 0.498)
+                else:
+                    predicted_ex = 0.75 + (prediction_probability_ex * 0.25)
+                ex_percent = np.round(predicted_ex * 100)
+                print("ex percent:",ex_percent)
+
+            # load A.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_a = a_model.predict(x=elmo_train_X)
+                prediction_probability_a = np.amax(prediction_a[0])
+                prediction_index_a = (np.where(prediction_a[0] == np.amax(prediction_a[0])))[0][0]
+                if prediction_index_a == 0:
+                    predicted_a = 0 + (prediction_probability_a * 0.25)
+                elif prediction_index_a == 1:
+                    predicted_a = 0.251 + (prediction_probability_a * 0.498)
+                else:
+                    predicted_a = 0.75 + (prediction_probability_a * 0.25)
+                a_percent = np.round(predicted_a * 100)
+                print("A percent:",a_percent)
+
+            # load C.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_c = c_model.predict(x=elmo_train_X)
+                prediction_probability_c = np.amax(prediction_c[0])
+                prediction_index_c = (np.where(prediction_c[0] == np.amax(prediction_c[0])))[0][0]
+                if prediction_index_c == 0:
+                    predicted_c = 0 + (prediction_probability_c * 0.25)
+                elif prediction_index_c == 1:
+                    predicted_c = 0.251 + (prediction_probability_c * 0.498)
+                else:
+                    predicted_c = 0.75 + (prediction_probability_c * 0.25)
+                c_percent = np.round(predicted_c * 100)
+                print("C percent:",c_percent)
+
+            # load E.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_e = e_model.predict(x=elmo_train_X)
+                prediction_probability_e = np.amax(prediction_e[0])
+                prediction_index_e = (np.where(prediction_e[0] == np.amax(prediction_e[0])))[0][0]
+                if prediction_index_e == 0:
+                    predicted_e = 0 + (prediction_probability_e * 0.25)
+                elif prediction_index_e == 1:
+                    predicted_e = 0.251 + (prediction_probability_e * 0.498)
+                else:
+                    predicted_e = 0.75 + (prediction_probability_e * 0.25)
+                e_percent = np.round(predicted_e * 100)
+                print("E percent:",e_percent)
+
+            # load O.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_o = o_model.predict(x=elmo_train_X)
+                prediction_probability_o = np.amax(prediction_o[0])
+                prediction_index_o = (np.where(prediction_o[0] == np.amax(prediction_o[0])))[0][0]
+                if prediction_index_o == 0:
+                    predicted_o = 0 + (prediction_probability_o * 0.25)
+                elif prediction_index_o == 1:
+                    predicted_o = 0.251 + (prediction_probability_o * 0.498)
+                else:
+                    predicted_o = 0.75 + (prediction_probability_o * 0.25)
+                o_percent = np.round(predicted_o * 100)
+                print("o percent:",o_percent)
+                end = time.time()
+                part1_time = end - start
+            #predict cgpa
+                start = time.time()
+                W1 = 1
+                W2 = 1
+
+            # load the model for di,pss
+                x1 = np.array([[predicted_di, predicted_pss]])
+                M_predict, sigma1 = loaded_model.predict(x1, return_std=True)
+                M = M_predict[0]
+                print('M: ',M)
+
+            #load the model GSE,Ex,E
+                x2 = np.array([[predicted_gse, predicted_ex, predicted_e]])
+                P_predict, sigma2 = loaded_model2.predict(x2, return_std=True)
+                P = P_predict[0]
+                print('P: ', P)
+
+            #cgpa calculate
+                cgpa = (W1*M + W2*P)/(W1+W2)
+                cgpa_percent = round((cgpa * 100)/4)
+                cgpa_percent = 'p'+str(int(cgpa_percent))
+                cgpa = "%.2f" % cgpa
+
+                print('cgpa: ', cgpa)
+                end = time.time()
+                part2_time = end - start
+                print("time consuming For pre-processing:", preprocessing_time)
+                print("time consuming For part1(elmo):", part1_time)
+                print("time consuming For part2 (cgpa predict):", part2_time)
+                e = time.time()
+                print("total prediction time :", (e-s)/60)
+                return render_template('result.html', di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent, a=a_percent, c=c_percent, e=e_percent, o=o_percent,cgpa =cgpa,cgpa_percent =cgpa_percent)
 
 
 
