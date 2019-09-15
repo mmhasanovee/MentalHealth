@@ -65,7 +65,7 @@ def clean(textData):
             all_str = all_str.replace(',', ' ')  # remove all ,
             all_str = re.sub('\.[\.]+', ' ', all_str)  # remove ...
             all_str = re.sub('\\\\', '', all_str)  # remove backslash
-            all_str = re.sub('�', '\'', all_str)
+            all_str = re.sub('ï¿½', '\'', all_str)
             all_str = re.sub(' i ', ' I ', all_str)
 
             # replace short word into full word E.g.. i m shazzad will be i am shazzad
@@ -197,12 +197,3 @@ def predict():
 
 
         return render_template('result.html', di=di_percent)
-
-
-
-@app.route('/result')
-def result():
-    return render_template('result.html')
-
-if __name__ == '__main__':
-    app.run()
