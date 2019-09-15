@@ -113,8 +113,7 @@ def clean(textData):
 
 app = Flask(__name__)
 
-global nlp,graph,di_model,pss_model,sess,elmo
-
+global nlp,graph,di_model,pss_model,gse_model,ex_model,a_model,c_model,e_model,o_model,loaded_model,loaded_model2,sess,elmo
 tf_config = os.environ.get('TF_CONFIG')
 sess = tf.Session(config=tf_config)
 graph = tf.get_default_graph()
@@ -125,6 +124,20 @@ di_model = load_model('di.h5')
 print("di model load complete")
 pss_model = load_model('pss.h5')
 print("pss model load complete")
+gse_model = load_model('gse.h5')
+print("gse model load complete")
+ex_model = load_model('ex.h5')
+print("ex model load complete")
+a_model = load_model('a.h5')
+print("a model load complete")
+c_model = load_model('c.h5')
+print("c model load complete")
+e_model = load_model('e.h5')
+print("e model load complete")
+o_model = load_model('o.h5')
+print("o model load complete")
+loaded_model = pickle.load(open('M.sav', 'rb'))
+loaded_model2 = pickle.load(open('P.sav', 'rb'))
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
 graph = tf.get_default_graph()
 
@@ -179,6 +192,7 @@ def predict():
             set_session(sess)
             elmo_train_X = elmo_vectors2(X)
         print("train shape: ",elmo_train_X.shape)
+        
     #load di.h5
         with graph.as_default():
             set_session(sess)
@@ -193,15 +207,118 @@ def predict():
             predicted_di = 0.75 + (prediction_probability_di * 0.25)
         di_percent = np.round(predicted_di*100)
         print("dipression percent:",di_percent)
+        
+        # load pss.h5
+        with graph.as_default():
+            set_session(sess)
+            prediction_pss = pss_model.predict(x=elmo_train_X)
+        prediction_probability_pss = np.amax(prediction_pss[0])
+        prediction_index_pss = (np.where(prediction_pss[0] == np.amax(prediction_pss[0])))[0][0]
+        if prediction_index_pss == 0:
+            predicted_pss = 0 + (prediction_probability_pss * 0.25)
+        elif prediction_index_pss == 1:
+            predicted_pss = 0.251 + (prediction_probability_pss * 0.498)
+        else:
+            predicted_pss = 0.75 + (prediction_probability_pss * 0.25)
+        pss_percent = np.round(predicted_pss * 100)
+        print("pss percent:",pss_percent)
+
+    # load gse.h5
+        with graph.as_default():
+            set_session(sess)
+            prediction_gse = gse_model.predict(x=elmo_train_X)
+        prediction_probability_gse = np.amax(prediction_gse[0])
+        prediction_index_gse = (np.where(prediction_gse[0] == np.amax(prediction_gse[0])))[0][0]
+        if prediction_index_gse == 0:
+            predicted_gse = 0 + (prediction_probability_gse * 0.25)
+        elif prediction_index_gse == 1:
+            predicted_gse = 0.251 + (prediction_probability_gse * 0.498)
+        else:
+            predicted_gse = 0.75 + (prediction_probability_gse * 0.25)
+        gse_percent = np.round(predicted_gse * 100)
+        print("gse percent:",gse_percent)
+
+    # load ex.h5
+        with graph.as_default():
+            set_session(sess)
+            prediction_ex = ex_model.predict(x=elmo_train_X)
+        prediction_probability_ex = np.amax(prediction_ex[0])
+        prediction_index_ex = (np.where(prediction_ex[0] == np.amax(prediction_ex[0])))[0][0]
+        if prediction_index_ex == 0:
+            predicted_ex = 0 + (prediction_probability_ex * 0.25)
+        elif prediction_index_ex == 1:
+            predicted_ex = 0.251 + (prediction_probability_ex * 0.498)
+        else:
+            predicted_ex = 0.75 + (prediction_probability_ex * 0.25)
+        ex_percent = np.round(predicted_ex * 100)
+        print("ex percent:",ex_percent)
+
+    # load A.h5
+        with graph.as_default():
+            set_session(sess)
+            prediction_a = a_model.predict(x=elmo_train_X)
+        prediction_probability_a = np.amax(prediction_a[0])
+        prediction_index_a = (np.where(prediction_a[0] == np.amax(prediction_a[0])))[0][0]
+        if prediction_index_a == 0:
+            predicted_a = 0 + (prediction_probability_a * 0.25)
+        elif prediction_index_a == 1:
+            predicted_a = 0.251 + (prediction_probability_a * 0.498)
+        else:
+            predicted_a = 0.75 + (prediction_probability_a * 0.25)
+        a_percent = np.round(predicted_a * 100)
+        print("A percent:",a_percent)
+
+    # load C.h5
+        with graph.as_default():
+            set_session(sess)
+            prediction_c = c_model.predict(x=elmo_train_X)
+        prediction_probability_c = np.amax(prediction_c[0])
+        prediction_index_c = (np.where(prediction_c[0] == np.amax(prediction_c[0])))[0][0]
+        if prediction_index_c == 0:
+            predicted_c = 0 + (prediction_probability_c * 0.25)
+        elif prediction_index_c == 1:
+            predicted_c = 0.251 + (prediction_probability_c * 0.498)
+        else:
+            predicted_c = 0.75 + (prediction_probability_c * 0.25)
+        c_percent = np.round(predicted_c * 100)
+        print("C percent:",c_percent)
+
+    # load E.h5
+        with graph.as_default():
+            set_session(sess)
+            prediction_e = e_model.predict(x=elmo_train_X)
+        prediction_probability_e = np.amax(prediction_e[0])
+        prediction_index_e = (np.where(prediction_e[0] == np.amax(prediction_e[0])))[0][0]
+        if prediction_index_e == 0:
+            predicted_e = 0 + (prediction_probability_e * 0.25)
+        elif prediction_index_e == 1:
+            predicted_e = 0.251 + (prediction_probability_e * 0.498)
+        else:
+            predicted_e = 0.75 + (prediction_probability_e * 0.25)
+        e_percent = np.round(predicted_e * 100)
+        print("E percent:",e_percent)
+
+    # load O.h5
+        with graph.as_default():
+            set_session(sess)
+            prediction_o = o_model.predict(x=elmo_train_X)
+        prediction_probability_o = np.amax(prediction_o[0])
+        prediction_index_o = (np.where(prediction_o[0] == np.amax(prediction_o[0])))[0][0]
+        if prediction_index_o == 0:
+            predicted_o = 0 + (prediction_probability_o * 0.25)
+        elif prediction_index_o == 1:
+            predicted_o = 0.251 + (prediction_probability_o * 0.498)
+        else:
+            predicted_o = 0.75 + (prediction_probability_o * 0.25)
+        o_percent = np.round(predicted_o * 100)
+        print("o percent:",o_percent)
+        end = time.time()
+        part1_time = end - start
 
 
         return render_template('result.html', di=di_percent)
 
 
-
-@app.route('/result')
-def result():
-    return render_template('result.html')
 
 if __name__ == '__main__':
     app.run()
