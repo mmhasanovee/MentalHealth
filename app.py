@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request
 import numpy as np
 import tensorflow as tf
@@ -64,7 +65,7 @@ def clean(textData):
             all_str = all_str.replace(',', ' ')  # remove all ,
             all_str = re.sub('\.[\.]+', ' ', all_str)  # remove ...
             all_str = re.sub('\\\\', '', all_str)  # remove backslash
-            all_str = re.sub('ï¿½', '\'', all_str)
+            all_str = re.sub('�', '\'', all_str)
             all_str = re.sub(' i ', ' I ', all_str)
 
             # replace short word into full word E.g.. i m shazzad will be i am shazzad
@@ -112,7 +113,9 @@ def clean(textData):
     return allPost
 
 app = Flask(__name__)
-global nlp,graph,di_model,pss_model,gse_model,ex_model,a_model,c_model,e_model,o_model,loaded_model,loaded_model2,sess,elmo
+
+global nlp,graph,di_model,pss_model,sess,elmo
+
 tf_config = os.environ.get('TF_CONFIG')
 sess = tf.Session(config=tf_config)
 graph = tf.get_default_graph()
@@ -123,8 +126,6 @@ di_model = load_model('di.h5')
 print("di model load complete")
 pss_model = load_model('pss.h5')
 print("pss model load complete")
-gse_model = load_model('gse.h5')
-print("gse model load complete")
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
 graph = tf.get_default_graph()
 
@@ -179,7 +180,6 @@ def predict():
             set_session(sess)
             elmo_train_X = elmo_vectors2(X)
         print("train shape: ",elmo_train_X.shape)
-        
     #load di.h5
         with graph.as_default():
             set_session(sess)
@@ -194,42 +194,15 @@ def predict():
             predicted_di = 0.75 + (prediction_probability_di * 0.25)
         di_percent = np.round(predicted_di*100)
         print("dipression percent:",di_percent)
-        
-        # load pss.h5
-        with graph.as_default():
-            set_session(sess)
-            prediction_pss = pss_model.predict(x=elmo_train_X)
-        prediction_probability_pss = np.amax(prediction_pss[0])
-        prediction_index_pss = (np.where(prediction_pss[0] == np.amax(prediction_pss[0])))[0][0]
-        if prediction_index_pss == 0:
-            predicted_pss = 0 + (prediction_probability_pss * 0.25)
-        elif prediction_index_pss == 1:
-            predicted_pss = 0.251 + (prediction_probability_pss * 0.498)
-        else:
-            predicted_pss = 0.75 + (prediction_probability_pss * 0.25)
-        pss_percent = np.round(predicted_pss * 100)
-        print("pss percent:",pss_percent)
 
-    # load gse.h5
-        with graph.as_default():
-            set_session(sess)
-            prediction_gse = gse_model.predict(x=elmo_train_X)
-        prediction_probability_gse = np.amax(prediction_gse[0])
-        prediction_index_gse = (np.where(prediction_gse[0] == np.amax(prediction_gse[0])))[0][0]
-        if prediction_index_gse == 0:
-            predicted_gse = 0 + (prediction_probability_gse * 0.25)
-        elif prediction_index_gse == 1:
-            predicted_gse = 0.251 + (prediction_probability_gse * 0.498)
-        else:
-            predicted_gse = 0.75 + (prediction_probability_gse * 0.25)
-        gse_percent = np.round(predicted_gse * 100)
-        print("gse percent:",gse_percent)
+
+        return render_template('result.html', di=di_percent)
 
 
 
-         return render_template('result.html', di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent, a=a_percent, c=c_percent, e=e_percent, o=o_percent,cgpa =cgpa,cgpa_percent =cgpa_percent)
-
+@app.route('/result')
+def result():
+    return render_template('result.html')
 
 if __name__ == '__main__':
     app.run()
-    
