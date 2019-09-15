@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="author" content="Hasan OnM">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!--===============================================================================================-->
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icons/favicon_main.png') }}"/>
   <title>Anazlyed Result</title>
 
   <!-- Meta and Opengraph tags -->
@@ -156,32 +154,32 @@
 <!-- @end main -->
 
   <!-- Footer -->
-  <footer style="justify-content: space-between;">
 
-    <figure class="swing">
-      <img src="https://i.ibb.co/QQr5qnr/Happy-Emoji-Icon-5c9b7b25-b215-4457-922d-fef519a08b06-large.png" width="320" >
-    </figure>
-    <h2 style="color:#EE7600;letter-spacing:2px">::Analyzed CGPA::<h2>
-    <div class="c100 {{cgpa_percent}} big" style="margin-right:200px";>
-
-        <span>{{cgpa}}</span>
-
-        <div class="slice">
-            <div class="bar"></div>
-            <div class="fill"></div>
-
-        </div>
-
-    </div>
-
-
-
-
-  </footer>
 
   <!-- Include scripts -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/jquery/jquery-2.1.4.min.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js') }}"></script>
 </body>
+<footer style="justify-content: space-between;">
 
+  <figure class="swing">
+    <img src="https://i.ibb.co/QQr5qnr/Happy-Emoji-Icon-5c9b7b25-b215-4457-922d-fef519a08b06-large.png" width="320" >
+  </figure>
+  <h2 style="color:#EE7600;letter-spacing:2px">::Analyzed CGPA::<h2>
+  <div class="c100 {{cgpa_percent}} big" style="margin-right:200px";>
+
+      <span>{{cgpa}}</span>
+
+      <div class="slice">
+          <div class="bar"></div>
+          <div class="fill"></div>
+
+      </div>
+
+  </div>
+
+
+
+
+</footer>
 </html>
