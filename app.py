@@ -10,7 +10,6 @@ from tensorflow.python.keras.models import load_model
 from tensorflow.python.keras.backend import set_session
 import re
 import os
-import time
 
 contractions = {
 "ain't": "am not","aren't": "are not","can't": "cannot","can't've": "cannot have","'cause": "because","could've": "could have","couldn't": "could not",
@@ -197,12 +196,12 @@ nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 print("spacy load complete")
 #di_model = load_model('di.h5')
 #print("di model load complete")
-#pss_model = load_model('pss.h5')
-#print("pss model load complete")
-#gse_model = load_model('gse.h5')
-#print("gse model load complete")
-#ex_model = load_model('ex.h5')
-#print("ex model load complete")
+pss_model = load_model('pss.h5')
+print("pss model load complete")
+gse_model = load_model('gse.h5')
+print("gse model load complete")
+ex_model = load_model('ex.h5')
+print("ex model load complete")
 a_model = load_model('a.h5')
 print("a model load complete")
 c_model = load_model('c.h5')
@@ -223,8 +222,6 @@ def home():
 @app.route('/predict',methods=['POST'])
 def predict():
     if request.method == 'POST':
-        s = time.time() # checking how much time the program take to execute
-        start = time.time()
         _name = request.form['name']
         _email = request.form['email']
         _data = request.form['message']
@@ -276,7 +273,6 @@ def predict():
             X = df["clean_fb_data"]
 
             if(len(X)==0):
-                print("err lemmatization")
                 return render_template('Error.html')
             else:
                 # Extract ELMo embeddings
@@ -284,10 +280,48 @@ def predict():
                     set_session(sess)
                     elmo_train_X = elmo_vectors2(X)
                 print("train shape: ",elmo_train_X.shape)
-                end = time.time()
-                preprocessing_time = end - start
-
-                start = time.time()
+            #load pss.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_pss = pss_model.predict(x=elmo_train_X)
+                prediction_probability_pss = np.amax(prediction_pss[0])
+                prediction_index_pss = (np.where(prediction_pss[0] == np.amax(prediction_pss[0])))[0][0]
+                if prediction_index_pss == 0:
+                    predicted_pss = 0 + (prediction_probability_pss * 0.25)
+                elif prediction_index_pss == 1:
+                    predicted_pss = 0.251 + (prediction_probability_pss * 0.498)
+                else:
+                    predicted_pss = 0.75 + (prediction_probability_pss * 0.25)
+                pss_percent = np.round(predicted_pss*100)
+                print("pss percent:",pss_percent)
+            #load gse.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_gse = gse_model.predict(x=elmo_train_X)
+                prediction_probability_gse = np.amax(prediction_gse[0])
+                prediction_index_gse = (np.where(prediction_gse[0] == np.amax(prediction_gse[0])))[0][0]
+                if prediction_index_gse == 0:
+                    predicted_gse = 0 + (prediction_probability_gse * 0.25)
+                elif prediction_index_gse == 1:
+                    predicted_gse = 0.251 + (prediction_probability_gse * 0.498)
+                else:
+                    predicted_gse = 0.75 + (prediction_probability_gse * 0.25)
+                gse_percent = np.round(predicted_gse*100)
+                print("gse percent:",gse_percent)
+            #load ex.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_ex = ex_model.predict(x=elmo_train_X)
+                prediction_probability_ex = np.amax(prediction_ex[0])
+                prediction_index_ex = (np.where(prediction_ex[0] == np.amax(prediction_ex[0])))[0][0]
+                if prediction_index_ex == 0:
+                    predicted_ex = 0 + (prediction_probability_ex * 0.25)
+                elif prediction_index_ex == 1:
+                    predicted_ex = 0.251 + (prediction_probability_ex * 0.498)
+                else:
+                    predicted_ex = 0.75 + (prediction_probability_ex * 0.25)
+                ex_percent = np.round(predicted_ex*100)
+                print("ex percent:",ex_percent)
 
             #load a.h5
                 with graph.as_default():
@@ -346,9 +380,9 @@ def predict():
                 o_percent = np.round(predicted_o*100)
                 print("o percent:",o_percent)
                 
-                #pss=pss_percent, gse=gse_percent, ex=ex_percent,
+                #
 
-                return render_template('result.html',a=a_percent, c=c_percent, e=e_percent, o=o_percent)
+                return render_template('result.html',pss=pss_percent, gse=gse_percent, ex=ex_percent, a=a_percent, c=c_percent, e=e_percent, o=o_percent)
 
 
 
