@@ -288,62 +288,7 @@ def predict():
                 preprocessing_time = end - start
 
                 start = time.time()
-"""            #load di.h5
-                with graph.as_default():
-                    set_session(sess)
-                    prediction_di = di_model.predict(x=elmo_train_X)
-                prediction_probability_di = np.amax(prediction_di[0])
-                prediction_index_di = (np.where(prediction_di[0] == np.amax(prediction_di[0])))[0][0]
-                if prediction_index_di == 0:
-                    predicted_di = 0 + (prediction_probability_di * 0.25)
-                elif prediction_index_di == 1:
-                    predicted_di = 0.251 + (prediction_probability_di * 0.498)
-                else:
-                    predicted_di = 0.75 + (prediction_probability_di * 0.25)
-                di_percent = np.round(predicted_di*100)
-                print("dipression percent:",di_percent)
-            #load pss.h5
-                with graph.as_default():
-                    set_session(sess)
-                    prediction_pss = pss_model.predict(x=elmo_train_X)
-                prediction_probability_pss = np.amax(prediction_pss[0])
-                prediction_index_pss = (np.where(prediction_pss[0] == np.amax(prediction_pss[0])))[0][0]
-                if prediction_index_pss == 0:
-                    predicted_pss = 0 + (prediction_probability_pss * 0.25)
-                elif prediction_index_pss == 1:
-                    predicted_pss = 0.251 + (prediction_probability_pss * 0.498)
-                else:
-                    predicted_pss = 0.75 + (prediction_probability_pss * 0.25)
-                pss_percent = np.round(predicted_pss*100)
-                print("pss percent:",pss_percent)
-            #load gse.h5
-                with graph.as_default():
-                    set_session(sess)
-                    prediction_gse = gse_model.predict(x=elmo_train_X)
-                prediction_probability_gse = np.amax(prediction_gse[0])
-                prediction_index_gse = (np.where(prediction_gse[0] == np.amax(prediction_gse[0])))[0][0]
-                if prediction_index_gse == 0:
-                    predicted_gse = 0 + (prediction_probability_gse * 0.25)
-                elif prediction_index_gse == 1:
-                    predicted_gse = 0.251 + (prediction_probability_gse * 0.498)
-                else:
-                    predicted_gse = 0.75 + (prediction_probability_gse * 0.25)
-                gse_percent = np.round(predicted_gse*100)
-                print("gse percent:",gse_percent)
-            #load ex.h5
-                with graph.as_default():
-                    set_session(sess)
-                    prediction_ex = ex_model.predict(x=elmo_train_X)
-                prediction_probability_ex = np.amax(prediction_ex[0])
-                prediction_index_ex = (np.where(prediction_ex[0] == np.amax(prediction_ex[0])))[0][0]
-                if prediction_index_ex == 0:
-                    predicted_ex = 0 + (prediction_probability_ex * 0.25)
-                elif prediction_index_ex == 1:
-                    predicted_ex = 0.251 + (prediction_probability_ex * 0.498)
-                else:
-                    predicted_ex = 0.75 + (prediction_probability_ex * 0.25)
-                ex_percent = np.round(predicted_ex*100)
-                print("ex percent:",ex_percent)             """
+
             #load a.h5
                 with graph.as_default():
                     set_session(sess)
