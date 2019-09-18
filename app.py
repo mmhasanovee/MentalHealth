@@ -197,6 +197,8 @@ nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 print("spacy load complete")
 di_model = load_model('di.h5')
 print("di model load complete")
+pss_model = load_model('pss.h5')
+print("pss model load complete")
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
 graph = tf.get_default_graph()
 
@@ -288,8 +290,22 @@ def predict():
                     predicted_di = 0.75 + (prediction_probability_di * 0.25)
                 di_percent = np.round(predicted_di*100)
                 print("dipression percent:",di_percent)
+            #load pss.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_pss = pss_model.predict(x=elmo_train_X)
+                prediction_probability_pss = np.amax(prediction_pss[0])
+                prediction_index_pss = (np.where(prediction_pss[0] == np.amax(prediction_pss[0])))[0][0]
+                if prediction_index_pss == 0:
+                    predicted_pss = 0 + (prediction_probability_pss * 0.25)
+                elif prediction_index_pss == 1:
+                    predicted_pss = 0.251 + (prediction_probability_pss * 0.498)
+                else:
+                    predicted_pss = 0.75 + (prediction_probability_pss * 0.25)
+                pss_percent = np.round(predicted_pss*100)
+                print("pss percent:",pss_percent)
 
-                return render_template('result.html', di=di_percent)
+                return render_template('result.html', di=di_percent, pss=pss_percent)
 
 
 
