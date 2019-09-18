@@ -201,6 +201,8 @@ pss_model = load_model('pss.h5')
 print("pss model load complete")
 gse_model = load_model('gse.h5')
 print("gse model load complete")
+ex_model = load_model('ex.h5')
+print("ex model load complete")
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
 graph = tf.get_default_graph()
 
@@ -320,8 +322,22 @@ def predict():
                     predicted_gse = 0.75 + (prediction_probability_gse * 0.25)
                 gse_percent = np.round(predicted_gse*100)
                 print("gse percent:",gse_percent)
+            #load ex.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_ex = ex_model.predict(x=elmo_train_X)
+                prediction_probability_ex = np.amax(prediction_ex[0])
+                prediction_index_ex = (np.where(prediction_ex[0] == np.amax(prediction_ex[0])))[0][0]
+                if prediction_index_ex == 0:
+                    predicted_ex = 0 + (prediction_probability_ex * 0.25)
+                elif prediction_index_ex == 1:
+                    predicted_ex = 0.251 + (prediction_probability_ex * 0.498)
+                else:
+                    predicted_ex = 0.75 + (prediction_probability_ex * 0.25)
+                ex_percent = np.round(predicted_ex*100)
+                print("ex percent:",ex_percent)
 
-                return render_template('result.html', di=di_percent, pss=pss_percent, gse=gse_percent)
+                return render_template('result.html', di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent)
 
 
 
