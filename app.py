@@ -348,7 +348,7 @@ def predict():
                 
                 #pss=pss_percent, gse=gse_percent, ex=ex_percent,
 
-                return render_template('result.html', di=di_percent,  a=a_percent, c=c_percent, e=e_percent, o=o_percent)
+                return render_template('result.html',a=a_percent, c=c_percent, e=e_percent, o=o_percent)
 
 
 
