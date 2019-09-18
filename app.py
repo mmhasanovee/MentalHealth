@@ -195,14 +195,14 @@ graph = tf.get_default_graph()
 set_session(sess)
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 print("spacy load complete")
-di_model = load_model('di.h5')
-print("di model load complete")
-pss_model = load_model('pss.h5')
-print("pss model load complete")
-gse_model = load_model('gse.h5')
-print("gse model load complete")
-ex_model = load_model('ex.h5')
-print("ex model load complete")
+#di_model = load_model('di.h5')
+#print("di model load complete")
+#pss_model = load_model('pss.h5')
+#print("pss model load complete")
+#gse_model = load_model('gse.h5')
+#print("gse model load complete")
+#ex_model = load_model('ex.h5')
+#print("ex model load complete")
 a_model = load_model('a.h5')
 print("a model load complete")
 c_model = load_model('c.h5')
@@ -288,7 +288,7 @@ def predict():
                 preprocessing_time = end - start
 
                 start = time.time()
-            #load di.h5
+"""            #load di.h5
                 with graph.as_default():
                     set_session(sess)
                     prediction_di = di_model.predict(x=elmo_train_X)
@@ -343,7 +343,7 @@ def predict():
                 else:
                     predicted_ex = 0.75 + (prediction_probability_ex * 0.25)
                 ex_percent = np.round(predicted_ex*100)
-                print("ex percent:",ex_percent)
+                print("ex percent:",ex_percent)             """
             #load a.h5
                 with graph.as_default():
                     set_session(sess)
@@ -401,9 +401,9 @@ def predict():
                 o_percent = np.round(predicted_o*100)
                 print("o percent:",o_percent)
                 
-                
+                #pss=pss_percent, gse=gse_percent, ex=ex_percent,
 
-                return render_template('result.html', di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent, a=a_percent, c=c_percent, e=e_percent, o=o_percent)
+                return render_template('result.html', di=di_percent,  a=a_percent, c=c_percent, e=e_percent, o=o_percent)
 
 
 
