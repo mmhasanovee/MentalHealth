@@ -214,7 +214,6 @@ elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=False)
 graph = tf.get_default_graph()
 
 
-
 @app.route('/', methods = ['GET','POST'] )
 def home():
     return render_template('index.html')
