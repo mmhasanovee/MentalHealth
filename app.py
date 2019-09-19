@@ -379,7 +379,7 @@ def predict():
                 o_percent = np.round(predicted_o*100)
                 print("o percent:",o_percent)
                 
-                #
+                
 
                 return render_template('result.html',pss=pss_percent, gse=gse_percent, ex=ex_percent, a=a_percent, c=c_percent, e=e_percent, o=o_percent)
 
