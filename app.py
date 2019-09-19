@@ -210,7 +210,7 @@ e_model = load_model('e.h5')
 print("e model load complete")
 o_model = load_model('o.h5')
 print("o model load complete")
-elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
+elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=False)
 graph = tf.get_default_graph()
 
 
