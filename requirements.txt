@@ -10,3 +10,5 @@ keras
 requests
 langdetect
 gunicorn
+tf-nightly
+--upgrade tensorflow-gpu
