@@ -210,8 +210,6 @@ e_model = load_model('e.h5')
 print("e model load complete")
 o_model = load_model('o.h5')
 print("o model load complete")
-#loaded_model = pickle.load(open('M.sav', 'rb'))
-#loaded_model2 = pickle.load(open('P.sav', 'rb'))
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=False)
 graph = tf.get_default_graph()
 
