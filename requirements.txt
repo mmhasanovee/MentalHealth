@@ -11,4 +11,3 @@ requests
 langdetect
 gunicorn
 tf-nightly
-tensorflow-gpu
