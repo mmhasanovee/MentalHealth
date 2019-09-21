@@ -204,8 +204,8 @@ ex_model = load_model('ex.h5')
 print("ex model load complete")
 #a_model = load_model('a.h5')
 #print("a model load complete")
-c_model = load_model('c.h5')
-print("c model load complete")
+#c_model = load_model('c.h5')
+#print("c model load complete")
 e_model = load_model('e.h5')
 #o_model = load_model('o.h5')
 #print("o model load complete")
@@ -337,20 +337,6 @@ def predict():
                     predicted_ex = 0.75 + (prediction_probability_ex * 0.25)
                 ex_percent = np.round(predicted_ex*100)
                 print("ex percent:",ex_percent)
-            #load c.h5
-                with graph.as_default():
-                    set_session(sess)
-                    prediction_c = c_model.predict(x=elmo_train_X)
-                prediction_probability_c = np.amax(prediction_c[0])
-                prediction_index_c = (np.where(prediction_c[0] == np.amax(prediction_c[0])))[0][0]
-                if prediction_index_c == 0:
-                    predicted_c = 0 + (prediction_probability_c * 0.25)
-                elif prediction_index_c == 1:
-                    predicted_c = 0.251 + (prediction_probability_c * 0.498)
-                else:
-                    predicted_c = 0.75 + (prediction_probability_c * 0.25)
-                c_percent = np.round(predicted_c*100)
-                print("c percent:",c_percent)
             #load e.h5
                 with graph.as_default():
                     set_session(sess)
@@ -386,7 +372,7 @@ def predict():
                 cgpa_percent = 'p'+str(int(cgpa_percent))
                 cgpa = "%.2f" % cgpa
                 print('cgpa: ', cgpa)
-                return render_template('result.html',di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent, c=c_percent, e=e_percent, cgpa=cgpa, cgpa_percent=cgpa_percent)
+                return render_template('result.html',di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent, e=e_percent, cgpa=cgpa, cgpa_percent=cgpa_percent)
 
 
 
