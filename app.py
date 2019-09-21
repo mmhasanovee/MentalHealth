@@ -194,8 +194,8 @@ graph = tf.get_default_graph()
 set_session(sess)
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 print("spacy load complete")
-#di_model = load_model('di.h5')
-#print("di model load complete")
+di_model = load_model('di.h5')
+print("di model load complete")
 pss_model = load_model('pss.h5')
 print("pss model load complete")
 gse_model = load_model('gse.h5')
@@ -207,7 +207,11 @@ print("ex model load complete")
 c_model = load_model('c.h5')
 print("c model load complete")
 e_model = load_model('e.h5')
+#o_model = load_model('o.h5')
+#print("o model load complete")
 print("e model load complete")
+loaded_model = pickle.load(open('M.sav', 'rb'))
+loaded_model2 = pickle.load(open('P.sav', 'rb'))
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=False)
 graph = tf.get_default_graph()
 
@@ -277,6 +281,20 @@ def predict():
                     set_session(sess)
                     elmo_train_X = elmo_vectors2(X)
                 print("train shape: ",elmo_train_X.shape)
+            #load di.h5
+                with graph.as_default():
+                    set_session(sess)
+                    prediction_di = di_model.predict(x=elmo_train_X)
+                prediction_probability_di = np.amax(prediction_di[0])
+                prediction_index_di = (np.where(prediction_di[0] == np.amax(prediction_di[0])))[0][0]
+                if prediction_index_di == 0:
+                    predicted_di = 0 + (prediction_probability_di * 0.25)
+                elif prediction_index_di == 1:
+                    predicted_di = 0.251 + (prediction_probability_di * 0.498)
+                else:
+                    predicted_di = 0.75 + (prediction_probability_di * 0.25)
+                di_percent = np.round(predicted_di*100)
+                print("di percent:",di_percent)
             #load pss.h5
                 with graph.as_default():
                     set_session(sess)
@@ -347,11 +365,28 @@ def predict():
                     predicted_e = 0.75 + (prediction_probability_e * 0.25)
                 e_percent = np.round(predicted_e*100)
                 print("e percent:",e_percent)
- 
-                
-                
-
-                return render_template('result.html',pss=pss_percent, gse=gse_percent, ex=ex_percent, c=c_percent, e=e_percent)
+            
+            
+            #predict cgpa
+                W1=1
+                W2=1
+            #load the model for di,pss
+                x1 = np.array([[predicted_di, predicted_pss]])
+                M_predict, sigma1 = loaded_model.predict(x1, return_std=True)
+                M = M_predict[0]
+                print('M: ',M)
+            #load the model gse,ex,e
+                x2 = np.array([[predicted_gse, predicted_ex, predicted_e]])
+                P_predict, sigma2 = loaded_model2.predict(x2, return_std=True)
+                P = P_predict[0]
+                print('P: ', P)
+            # cgpa calculate
+                cgpa = (W1*M + W2*P)/(W1+W2)
+                cgpa_percent = round((cgpa * 100)/4)
+                cgpa_percent = 'p'+str(int(cgpa_percent))
+                cgpa = "%.2f" % cgpa
+                print('cgpa: ', cgpa)
+                return render_template('result.html',di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent, c=c_percent, e=e_percent, cgpa=cgpa, cgpa_percent=cgpa_percent)
 
 
 
