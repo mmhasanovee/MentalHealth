@@ -210,8 +210,10 @@ e_model = load_model('e.h5')
 #o_model = load_model('o.h5')
 #print("o model load complete")
 print("e model load complete")
-#loaded_model = pickle.load(open('M.sav', 'rb'))
-#loaded_model2 = pickle.load(open('P.sav', 'rb'))
+loaded_model = pickle.load(open('M.sav', 'rb'))
+print("loaded_model model load complete")
+loaded_model2 = pickle.load(open('P.sav', 'rb'))
+print("loaded_model2 model load complete")
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=False)
 graph = tf.get_default_graph()
 
@@ -354,24 +356,24 @@ def predict():
             
             
             #predict cgpa
-                #W1=1
-                #W2=1
+                W1=1
+                W2=1
             #load the model for di,pss
-                #x1 = np.array([[predicted_di, predicted_pss]])
-                #M_predict, sigma1 = loaded_model.predict(x1, return_std=True)
-                #M = M_predict[0]
-                #print('M: ',M)
+                x1 = np.array([[predicted_di, predicted_pss]])
+                M_predict, sigma1 = loaded_model.predict(x1, return_std=True)
+                M = M_predict[0]
+                print('M: ',M)
             #load the model gse,ex,e
-                #x2 = np.array([[predicted_gse, predicted_ex, predicted_e]])
-                #P_predict, sigma2 = loaded_model2.predict(x2, return_std=True)
-                #P = P_predict[0]
-                #print('P: ', P)
+                x2 = np.array([[predicted_gse, predicted_ex, predicted_e]])
+                P_predict, sigma2 = loaded_model2.predict(x2, return_std=True)
+                P = P_predict[0]
+                print('P: ', P)
             # cgpa calculate
-                #cgpa = (W1*M + W2*P)/(W1+W2)
-                #cgpa_percent = round((cgpa * 100)/4)
-                #cgpa_percent = 'p'+str(int(cgpa_percent))
-                #cgpa = "%.2f" % cgpa
-                #print('cgpa: ', cgpa)
+                cgpa = (W1*M + W2*P)/(W1+W2)
+                cgpa_percent = round((cgpa * 100)/4)
+                cgpa_percent = 'p'+str(int(cgpa_percent))
+                cgpa = "%.2f" % cgpa
+                print('cgpa: ', cgpa)
                 return render_template('result.html',di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent, e=e_percent)
 
 
