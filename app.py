@@ -354,25 +354,25 @@ def predict():
             
             
             #predict cgpa
-                W1=1
-                W2=1
+                #W1=1
+                #W2=1
             #load the model for di,pss
-                x1 = np.array([[predicted_di, predicted_pss]])
-                M_predict, sigma1 = loaded_model.predict(x1, return_std=True)
-                M = M_predict[0]
-                print('M: ',M)
+                #x1 = np.array([[predicted_di, predicted_pss]])
+                #M_predict, sigma1 = loaded_model.predict(x1, return_std=True)
+                #M = M_predict[0]
+                #print('M: ',M)
             #load the model gse,ex,e
-                x2 = np.array([[predicted_gse, predicted_ex, predicted_e]])
-                P_predict, sigma2 = loaded_model2.predict(x2, return_std=True)
-                P = P_predict[0]
-                print('P: ', P)
+                #x2 = np.array([[predicted_gse, predicted_ex, predicted_e]])
+                #P_predict, sigma2 = loaded_model2.predict(x2, return_std=True)
+                #P = P_predict[0]
+                #print('P: ', P)
             # cgpa calculate
-                cgpa = (W1*M + W2*P)/(W1+W2)
-                cgpa_percent = round((cgpa * 100)/4)
-                cgpa_percent = 'p'+str(int(cgpa_percent))
-                cgpa = "%.2f" % cgpa
-                print('cgpa: ', cgpa)
-                return render_template('result.html',di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent, e=e_percent, cgpa=cgpa, cgpa_percent=cgpa_percent)
+                #cgpa = (W1*M + W2*P)/(W1+W2)
+                #cgpa_percent = round((cgpa * 100)/4)
+                #cgpa_percent = 'p'+str(int(cgpa_percent))
+                #cgpa = "%.2f" % cgpa
+                #print('cgpa: ', cgpa)
+                return render_template('result.html',di=di_percent, pss=pss_percent, gse=gse_percent, ex=ex_percent, e=e_percent)
 
 
 
